@@ -91,7 +91,7 @@
      fun()-> 
      Ets_Product= ets:tab2list('Products'),
      erlang:display(Ets_Product),  
-    PROPS = [[{<<"name">>, Cookie}, {<<"qty">>, QTY_INT}, {<<"price">>, Price}]|| 
+    PROPS = [{<<"name">>, Cookie}, {<<"qty">>, QTY_INT}, {<<"price">>, Price}|| 
      {EV, Cookie, Price}<-Ets_Product,
      {IV, Qty}<- M,
      {QTY_INT, _} <- [string:to_integer(Qty)],
