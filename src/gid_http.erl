@@ -1,5 +1,5 @@
 -module(gid_http).
--export([start_link/0, init/0,init/2, merge_util/2, get_products/0, enter_qty/1,save_doc/2]).
+-export([start_link/0, init/0,init/2, merge_util/2, get_products/0, enter_qty/1]).
 
   
 
@@ -91,7 +91,7 @@
      fun()-> 
      Ets_Product= ets:tab2list('Products'),
      erlang:display(Ets_Product),  
-    PROPS = [{<<"name">>, Cookie}, {<<"qty">>, QTY_INT}, {<<"price">>, Price}|| 
+    PROPS = [[{<<"name">>, Cookie}, {<<"qty">>, QTY_INT}, {<<"price">>, Price}]|| 
      {EV, Cookie, Price}<-Ets_Product,
      {IV, Qty}<- M,
      {QTY_INT, _} <- [string:to_integer(Qty)],
@@ -104,8 +104,7 @@
   end()
 .
 
-save_doc(database,data)->
-  couchbeam:save_doc(database,data).
+
 
 
  
