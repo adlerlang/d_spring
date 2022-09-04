@@ -1,5 +1,5 @@
 -module(gid_http).
--export([start_link/0, init/0,init/2, merge_util/2, get_products/0, enter_qty/1]).
+-export([start_link/0, init/0,init/2, merge_util/2, get_products/0, enter_qty/1,save_doc/2]).
 
   
 
@@ -9,7 +9,8 @@
     Pid = spawn_link('gid_http', init, []),
      Pid ! {'ok', self()},
      receive
-      {'init', Value}-> Value, io:format("ok it") 
+      {'init', Value}-> Value, io:format("ok it"); 
+      _ -> exit("vailed to connect to gideons")
      end,
      {'ok', self()}
     .
@@ -71,13 +72,9 @@
     {'ok', {{_,200, _}, _, Value}} ->
     PageNow = P + 1,
     New_State = jsx:decode(list_to_binary(Value),  [{return_maps, false}])  ++ Values,
-
-
-
-
-
     init(PageNow, New_State);
      V -> io:format("server isn't working ~p", [V])
+          
     end.
 
 
@@ -107,7 +104,8 @@
   end()
 .
 
-
+save_doc(database,data)->
+  couchbeam:save_doc(database,data).
 
 
  
