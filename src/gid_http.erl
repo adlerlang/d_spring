@@ -10,8 +10,8 @@
     Pid = spawn_link('gid_http', init, []),
      Pid ! {'ok', self()},
      receive
-      {'ok', 'done'}-> 
-	 {'failed_connect', _} ->  timer:sleep(10000),
+      {'ok', 'done'}-> io:format("done"); 
+     {'failed_connect', _} ->  timer:sleep(10000),
 				   io:format("exiting"),
 				   exit(self(), normal)
            
