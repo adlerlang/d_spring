@@ -5,12 +5,16 @@
 
 
   start_link()->
-    process_flag('trap_exit', true), 
+    process_flag('trap_exit', true),
+    io:format("started"), 
     Pid = spawn_link('gid_http', init, []),
      Pid ! {'ok', self()},
      receive
-      {'init', Value}-> Value, io:format("ok it"); 
-      _ -> exit("vailed to connect to gideons")
+      {'ok', 'done'}-> 
+	 {'failed_connect', _} ->  timer:sleep(10000),
+				   io:format("exiting"),
+				   exit(self(), normal)
+           
      end,
      {'ok', self()}
     .
@@ -34,17 +38,19 @@
      'undefined' -> io:format("did it again");
       _ -> io:format("didn't http again"),  'defined'
      end,
-     From ! {'init', Where };
+     Init = init(1, []),
+     io:format("init hit ~p", [Init]),
+     From ! Init;
      _ -> exit("failed")
 
      end,
-    F = init(1, []),
-    {'ok', F }
+    
+    {'ok', self() }
   . 
 
   init('done', Values) ->
     Map_Values = fun G([],A,  _) -> A;
-    G ([H|T], A, I ) ->
+    G([H|T], A, I ) ->
   
     case {proplists:get_value(<<"categories">>,H), proplists:get_value(<<"prices">>,H) }of
     {[[_,_,{<<"slug">>, <<"cookies">>},_], _], P} -> V =  
@@ -56,7 +62,11 @@
     Map = Map_Values(Values, [], 1),
     % Reverse_Map = lists:reverse(Map),
     
-    ets:insert('Products',Map);
+    ets:insert('Products',Map),
+     {'ok', 'done'}
+
+
+;
 
 
 
@@ -73,8 +83,10 @@
     PageNow = P + 1,
     New_State = jsx:decode(list_to_binary(Value),  [{return_maps, false}])  ++ Values,
     init(PageNow, New_State);
-     V -> io:format("server isn't working ~p", [V])
-          
+	{error, E} ->  
+		       E
+                
+        
     end.
 
 
