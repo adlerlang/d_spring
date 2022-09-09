@@ -20,6 +20,7 @@
     .
 
 
+
   merge_util([], V) ->V
   ;
   merge_util([H|T], V) ->
@@ -41,7 +42,7 @@
      Init = init(1, []),
      io:format("init hit ~p", [Init]),
      From ! Init;
-     _ -> exit("failed")
+     _ -> exit("failed ok")
 
      end,
     
